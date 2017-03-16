@@ -14,7 +14,7 @@
   }, {
     question: "What are the three base units of measurement in the metric system?",
     choices: [" Meter, Liter and Gram", " Decimals, Base 10, Floats"," European Nation Code"],
-    correctAnswer: "Meter, Liter and Gram"
+    correctAnswer: " Meter, Liter and Gram"
   }, {
     question: "How many planets in our solar system have moons?",
     choices: [" 9",  " 6",  " 12"],
@@ -39,7 +39,9 @@
     choose();
     
     // If no user selection, progress is stopped
-    if (isNaN(selections[questionCounter])) {
+    // since we're no longer checking for an integer specific value
+    // we can just check if the value is truthy (note that all string values with a length > 0 are considered truthy)
+    if ( !selections[questionCounter] ) {
       alert('Please make a selection!');
     } else {
       questionCounter++;
@@ -106,7 +108,10 @@
     var input = '';
     for (var i = 0; i < questions[index].choices.length; i++) {
       item = $('<li>');
-      input = '<input type="radio" name="answer" value=' + i + ' />';
+      // changing this to actually be the value of the answer instead of the index i
+      // this is because you later check the correct answer directly against this
+      // and it will fail every time if the value is just an index
+      input = '<input type="radio" name="answer" value="' + questions[index].choices[i] + '" />';
       input += questions[index].choices[i];
       item.append(input);
       radioList.append(item);
@@ -116,7 +121,9 @@
   
   // Reads the user selection and pushes the value to an array
   function choose() {
-    selections[questionCounter] = +$('input[name="answer"]:checked').val();
+    // no longer need to convert this value into an integer if we're storing the answer string
+    // also, generally best practice to use `parseInt` to convert string values into integers
+    selections[questionCounter] = $('input[name="answer"]:checked').val();
   }
   
   // Displays next requested element
@@ -127,9 +134,11 @@
       if(questionCounter < questions.length){
         var nextQuestion = createQuestionElement(questionCounter);
         game.append(nextQuestion).fadeIn();
-        if (!(isNaN(selections[questionCounter]))) {
-          $('input[value='+selections[questionCounter]+']').prop('checked', true);
-        }
+
+        // I'm not sure what this is here for, but it doesn't seem necessary for the program to work
+        // if (!(isNaN(selections[questionCounter]))) {
+        //   $('input[value=' + selections[questionCounter] + ']').prop('checked', true);
+        // }
         
         // Controls display of 'prev' button
         if(questionCounter === 1){
